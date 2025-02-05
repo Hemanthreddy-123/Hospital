@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f9fc; /* Soft light beige background */
+            color: #333;
+        }
+
+        header {
+            background-color: #28a745; /* Fresh green color */
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        section {
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 28px;
+            color: #333;
+        }
+
+        .payment-info {
+            background-color: #d1e7dd; /* Light pastel green */
+            color: #155724;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .appointment-time {
+            background-color: #f8f9fa; /* Light gray background for contrast */
+            color: #333;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+        }
+
+        .payment-form input,
+        .payment-form select,
+        .payment-form button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #28a745; /* Darker green for buttons */
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838; /* Dark green hover effect */
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #28a745; /* Matching footer color */
+            color: white;
+            font-size: 14px;
+        }
+
+        .confirmation-message {
+            background-color: #d1e7dd; /* Light green */
+            color: #155724;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .continue-btn {
+            background-color: #28a745; /* Green continue button */
+            color: white;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .continue-btn:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Payment Confirmation</h1>
+    </header>
+
+    <section>
+        <h2>Confirm Your Payment</h2>
+
+        <!-- Appointment Info (Show selected appointment details) -->
+        <div class="appointment-time">
+            <strong>Appointment Date & Time:</strong><br>
+            Date: <span id="appointment-date">12th February 2025</span><br>
+            Time: <span id="appointment-time">10:00 AM</span><br>
+            Doctor: <span id="doctor-name">Dr. John Doe</span>
+        </div>
+
+        <!-- Payment Info (Show payment info and options) -->
+        <div class="payment-info">
+            Please confirm your payment for the appointment. The total amount is 200.
+        </div>
+
+        <form action="#" class="payment-form" onsubmit="processPayment(event)">
+            <!-- Payment Method Selection -->
+            <label for="payment-method">Select Payment Method:</label>
+            <select id="payment-method" name="payment-method" required>
+                <option value="card">Credit/Debit Card</option>
+                <option value="upi">UPI</option>
+                <option value="netbanking">Net Banking</option>
+            </select>
+
+            <!-- Card Payment Details -->
+            <div id="card-details" class="payment-method-details">
+                <label for="card-number">Card Number:</label>
+                <input type="text" id="card-number" name="card-number" placeholder="Enter Card Number" required>
+
+                <label for="expiry-date">Expiry Date:</label>
+                <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY" required>
+
+                <label for="cvv">CVV:</label>
+                <input type="text" id="cvv" name="cvv" placeholder="CVV" required>
+            </div>
+
+            <!-- UPI Payment Details -->
+            <div id="upi-details" class="payment-method-details" style="display:none;">
+                <label for="upi-id">Enter UPI ID:</label>
+                <input type="text" id="upi-id" name="upi-id" placeholder="example@upi" required>
+            </div>
+
+            <!-- Net Banking Payment Details -->
+            <div id="netbanking-details" class="payment-method-details" style="display:none;">
+                <label for="bank-name">Select Your Bank:</label>
+                <select id="bank-name" name="bank-name" required>
+                    <option value="sbi">State Bank of India</option>
+                    <option value="hdfc">HDFC Bank</option>
+                    <option value="icici">ICICI Bank</option>
+                    <option value="axis">Axis Bank</option>
+                    <option value="kotak">Kotak Mahindra Bank</option>
+                </select>
+            </div>
+
+            <button type="submit">Pay Now</button>
+        </form>
+
+        <!-- Confirmation Message after Payment -->
+        <div id="confirmation-message" class="confirmation-message">
+            Your payment has been successfully processed! Thank you for booking your appointment.
+        </div>
+
+        <!-- Continue Button -->
+        <button id="continue-btn" class="continue-btn" style="display:none;" onclick="continueToNextPage()">Continue</button>
+
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Charan Sai Hospital Payment System. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // On the Payment Page, retrieve data from localStorage
+        window.onload = function() {
+            const appointmentDate = localStorage.getItem('appointmentDate');
+            const appointmentTime = localStorage.getItem('appointmentTime');
+            const doctor = localStorage.getItem('doctor');
+
+            // Display the appointment details
+            document.getElementById('appointment-date').textContent = appointmentDate;
+            document.getElementById('appointment-time').textContent = appointmentTime;
+            document.getElementById('doctor-name').textContent = doctor;
+        };
+
+        // Show/hide payment details based on selected method
+        document.getElementById('payment-method').addEventListener('change', function() {
+            var paymentMethod = this.value;
+            var cardDetails = document.getElementById('card-details');
+            var upiDetails = document.getElementById('upi-details');
+            var netbankingDetails = document.getElementById('netbanking-details');
+            
+            // Hide all details by default
+            cardDetails.style.display = 'none';
+            upiDetails.style.display = 'none';
+            netbankingDetails.style.display = 'none';
+            
+            // Show relevant details based on selected method
+            if (paymentMethod === 'card') {
+                cardDetails.style.display = 'block';
+            } else if (paymentMethod === 'upi') {
+                upiDetails.style.display = 'block';
+            } else if (paymentMethod === 'netbanking') {
+                netbankingDetails.style.display = 'block';
+            }
+        });
+
+        // Payment processing (simulation)
+        function processPayment(event) {
+            event.preventDefault();
+
+            // Hide the payment form
+            document.querySelector('.payment-form').style.display = 'none';
+
+            // Show confirmation message
+            document.getElementById('confirmation-message').style.display = 'block';
+
+            // Show Continue button
+            document.getElementById('continue-btn').style.display = 'inline-block';
+        }
+
+        // Continue to the next page or thank you page
+        function continueToNextPage() {
+            window.location.href = 'hemanth.html'; // Redirect to thank you page or confirmation page
+        }
+    </script>
+</body>
+</html>
