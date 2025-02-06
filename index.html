@@ -30,10 +30,21 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
+        h1 {
+            font-size: 36px;
+            margin: 0;
+        }
+
         h2 {
             font-size: 28px;
             text-align: center;
             color: #003366;
+        }
+
+        .intro-text {
+            font-size: 18px;
+            text-align: center;
+            margin: 20px 0;
         }
 
         input, select, button {
@@ -66,18 +77,77 @@
             color: white;
             font-size: 14px;
         }
+
+        .title-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #003366;
+            color: white;
+            text-align: center;
+        }
+
+        .title-page h1 {
+            font-size: 50px;
+        }
+
+        .title-page p {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        .start-button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .start-button:hover {
+            background-color: #45a049;
+        }
+
+        .user-details {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none; /* Initially hidden */
+        }
+
+        .user-details p {
+            font-size: 18px;
+            color: #003366;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Book Your Appointment</h1>
-    </header>
+    <!-- Title Page -->
+    <div class="title-page" id="title-page">
+        <h1>Welcome to Charan Sai Hospital</h1>
+        <p>Your health is our priority. We are here to provide the best healthcare services with experienced professionals.</p>
+        <button class="start-button" onclick="showAppointmentForm()">Start Appointment</button>
+    </div>
 
-    <section>
+    <!-- Appointment Form Section -->
+    <section id="appointment-section" style="display: none;">
+        <header>
+            <h1>Charan Sai Hospital</h1>
+        </header>
+
         <h2>Enter Your Appointment Details</h2>
 
         <!-- Appointment Form -->
         <form id="appointment-form" onsubmit="storeAppointmentData(event)">
+            <!-- Hospital Name (Non-editable) -->
+            <label for="hospital">Hospital Name:</label>
+            <input type="text" id="hospital" name="hospital" value="Charan Sai Hospital" readonly>
+
             <label for="name">Patient Name:</label>
             <input type="text" id="name" name="name" placeholder="Enter your full name" required>
 
@@ -119,6 +189,17 @@
 
             <button type="submit">Proceed to Payment</button>
         </form>
+
+        <!-- User Details Section (Initially hidden) -->
+        <div class="user-details" id="user-details">
+            <h3>Your Appointment Details</h3>
+            <p><strong>Name:</strong> <span id="user-name"></span></p>
+            <p><strong>Phone:</strong> <span id="user-phone"></span></p>
+            <p><strong>Email:</strong> <span id="user-email"></span></p>
+            <p><strong>Doctor:</strong> <span id="user-doctor"></span></p>
+            <p><strong>Appointment Date:</strong> <span id="user-date"></span></p>
+            <p><strong>Appointment Time:</strong> <span id="user-time"></span></p>
+        </div>
     </section>
 
     <footer>
@@ -126,6 +207,12 @@
     </footer>
 
     <script>
+        // Function to switch to the appointment form after the title page
+        function showAppointmentForm() {
+            document.getElementById('title-page').style.display = 'none';
+            document.getElementById('appointment-section').style.display = 'block';
+        }
+
         // Function to update the doctor options based on the selected category
         function updateDoctorOptions() {
             const category = document.getElementById('category').value;
@@ -163,7 +250,7 @@
             });
         }
 
-        // Function to store appointment data in localStorage
+        // Function to store appointment data in localStorage and redirect to payment page
         function storeAppointmentData(event) {
             event.preventDefault(); // Prevent form submission
 
@@ -175,8 +262,10 @@
             const appointmentDate = document.getElementById('date').value;
             const appointmentTime = document.getElementById('time').value;
             const doctor = document.getElementById('doctor').value;
+            const hospital = document.getElementById('hospital').value;
 
             // Store the data in localStorage
+            localStorage.setItem('hospital', hospital);
             localStorage.setItem('patientName', name);
             localStorage.setItem('phone', phone);
             localStorage.setItem('email', email);
@@ -185,9 +274,50 @@
             localStorage.setItem('appointmentTime', appointmentTime);
             localStorage.setItem('doctor', doctor);
 
-            // Redirect to payment page
-            window.location.href = 'payment.html'; // Redirect to payment page
+            // Display user details
+            displayUserDetails();
+
+            // Redirect to the payment page
+            window.location.href = 'payment.html'; // Redirect to the payment page
         }
+
+        // Function to display the user details
+        function displayUserDetails() {
+            // Show the user details section
+            document.getElementById('user-details').style.display = 'block';
+
+            // Get user data from localStorage
+            const name = localStorage.getItem('patientName');
+            const phone = localStorage.getItem('phone');
+            const email = localStorage.getItem('email');
+            const doctor = localStorage.getItem('doctor');
+            const appointmentDate = localStorage.getItem('appointmentDate');
+            const appointmentTime = localStorage.getItem('appointmentTime');
+
+            // Update the user details on the page
+            document.getElementById('user-name').textContent = name;
+            document.getElementById('user-phone').textContent = phone;
+            document.getElementById('user-email').textContent = email;
+            document.getElementById('user-doctor').textContent = doctor;
+            document.getElementById('user-date').textContent = appointmentDate;
+            document.getElementById('user-time').textContent = appointmentTime;
+        }
+
+        // Function to set current date and time restrictions
+        function setDateTimeRestrictions() {
+            const today = new Date();
+            
+            // Format the date in YYYY-MM-DD format
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('date').setAttribute('min', formattedDate); // Set the min date to today's date
+            
+            // Format time in HH:MM (24-hour format)
+            const formattedTime = today.toTimeString().split(' ')[0].substring(0, 5);
+            document.getElementById('time').setAttribute('min', formattedTime); // Set the min time to current time
+        }
+
+        // Call the function to apply restrictions when the page loads
+        window.onload = setDateTimeRestrictions;
     </script>
 </body>
 </html>
