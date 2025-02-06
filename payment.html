@@ -109,6 +109,28 @@
         .continue-btn:hover {
             background-color: #218838; /* Darker green on hover */
         }
+
+        /* Added style for flex container to ensure alignment */
+        .patient-info {
+            background-color: #f8f9fa; /* Light gray background for contrast */
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+        }
+
+        .patient-info span {
+            display: inline-block;
+            width: 100%;
+            margin: 4px 0;
+        }
+
+        .patient-info strong {
+            display: inline-block;
+            width: 150px; /* Fixed width for labels */
+        }
+
     </style>
 </head>
 <body>
@@ -124,7 +146,14 @@
             <strong>Appointment Date & Time:</strong><br>
             Date: <span id="appointment-date">12th February 2025</span><br>
             Time: <span id="appointment-time">10:00 AM</span><br>
-            Doctor: <span id="doctor-name">Dr. John Doe</span>
+            Doctor: <span id="doctor-name">Dr. John Doe</span><br><br>
+        </div>
+
+        <!-- Patient Info (Name and Phone Number) -->
+        <div class="patient-info">
+            <strong>Patient Information:</strong><br>
+            <span><strong>Patient Name:</strong> <span id="patient-name">John Smith</span></span><br>
+            <span><strong>Phone:</strong> <span id="patient-phone">+1 123-456-7890</span></span>
         </div>
 
         <!-- Payment Info (Show payment info and options) -->
@@ -194,11 +223,15 @@
             const appointmentDate = localStorage.getItem('appointmentDate');
             const appointmentTime = localStorage.getItem('appointmentTime');
             const doctor = localStorage.getItem('doctor');
+            const patientName = localStorage.getItem('patientName');
+            const patientPhone = localStorage.getItem('patientPhone');
 
             // Display the appointment details
             document.getElementById('appointment-date').textContent = appointmentDate;
             document.getElementById('appointment-time').textContent = appointmentTime;
             document.getElementById('doctor-name').textContent = doctor;
+            document.getElementById('patient-name').textContent = patientName;
+            document.getElementById('patient-phone').textContent = patientPhone;
         };
 
         // Show/hide payment details based on selected method
